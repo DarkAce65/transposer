@@ -43,16 +43,16 @@ void draw() {
 	int[] max = new int[3];
 	for (int i = 0; i < sampleSize; i++) {
 		float v = fft.getBand(i);
-		if (fft.getBand(max[0]) < v) {
+		if(fft.getBand(max[0]) < v) {
 			max[2] = max[1];
 			max[1] = max[0];
 			max[0] = i;
 		}
-		else if (fft.getBand(max[1]) < v) {
+		else if(fft.getBand(max[1]) < v) {
 			max[2] = max[1];
 			max[1] = i;
 		}
-		else if (fft.getBand(max[2]) < v) {
+		else if(fft.getBand(max[2]) < v) {
 			max[2] = i;
 		}
 	}
@@ -62,8 +62,9 @@ void draw() {
 		noStroke();
 		rect(x * 10, (1 - y) * h / 2, 10, h / 2);
 	}
-	stroke(255);
-	for (int i = 0; i < max.length; i++) {
+	
+	for(int i = max.length - 1; i >= 0; i--) {
+		stroke(i == 0 ? 255 : 64);
 		float py = max(1, min(88, keyN(freq[i]))) * h / 88 / 2;
 		float ny = max(1, min(88, keyN(fft.indexToFreq(max[i])))) * h / 88 / 2;
 		line(x - 1, h - py - y * h / 2, x, h - ny - y * h / 2);
