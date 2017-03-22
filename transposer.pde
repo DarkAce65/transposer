@@ -20,7 +20,10 @@ Oscil wave3;
 AudioDevice board; 
 FFT fft;
 
+int w = 700;
+int h = 500;
 int x = 0;
+int y = 1;
 String[] letteredKeys = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 float[] amp = new float[3];
 float[] freq = new float[3];
@@ -38,7 +41,7 @@ String pianoKey(int keyN) {
 }
 
 void setup() {
-	size(700, 575);
+	surface.setSize(w, h + 70);
 	background(0);
 
 	minim = new Minim(this);
@@ -79,7 +82,9 @@ void draw() {
 
 	stroke(255);
 	for (int i = 0; i < max.length; i++) {
-		line(x - 1, height - keyN(freq[i]) * (height - 75) / 88, x, height - keyN(fft.indexToFreq(max[i])) * (height - 75) / 88);
+		float py = max(1, min(88, keyN(freq[i]))) * h / 88 / 2;
+		float ny = max(1, min(88, keyN(fft.indexToFreq(max[i])))) * h / 88 / 2;
+		line(x - 1, h - py - y * h / 2, x, h - ny - y * h / 2);
 		amp[i] = fft.getBand(max[i]);
 		freq[i] = fft.indexToFreq(max[i]);
 		keys[i] = pianoKey(keyN(freq[i]));
@@ -87,17 +92,18 @@ void draw() {
 	
 	fill(64);
 	noStroke();
-	rect(0, 0, width, 75);
+	rect(0, h, width, 70);
 	fill(255);
-	text("Largest Amplitudes: " + amp[0] + ", " + amp[1] + ", " + amp[2], 0, 20);
-	text("Largest Frequencies: " + freq[0] + ", " + freq[1] + ", " + freq[2], 0, 40);
-	text("Piano Keys: " + keys[0] + ", " + keys[1] + ", " + keys[2], 0, 60);
+	text("Largest Amplitudes: " + amp[0] + ", " + amp[1] + ", " + amp[2], 0, height - 50);
+	text("Largest Frequencies: " + freq[0] + ", " + freq[1] + ", " + freq[2], 0, height - 30);
+	text("Piano Keys: " + keys[0] + ", " + keys[1] + ", " + keys[2], 0, height - 10);
 
 	x++;
 	if(x > width) {
 		x = 0;
+		y = (y + 1) % 2;
 		fill(0);
 		noStroke();
-		rect(0, 75, width, height - 75);
+		rect(0, (1 - y) * h / 2, width, h / 2);
 	}
 }
