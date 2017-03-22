@@ -1,23 +1,10 @@
 import ddf.minim.*;
 import ddf.minim.analysis.*;
-import ddf.minim.effects.*;
-import ddf.minim.signals.*;
-import ddf.minim.spi.*;
-import ddf.minim.ugens.*;
-
-import cc.arduino.*;
-import org.firmata.*;
-import processing.sound.AudioDevice;
 
 int sampleRate = 44100;
 int sampleSize = 4096;
 Minim minim;
 AudioInput ain;
-AudioOutput aout;
-Oscil wave1;
-Oscil wave2;
-Oscil wave3;
-AudioDevice board; 
 FFT fft;
 
 int w = 700;
@@ -46,17 +33,7 @@ void setup() {
 
 	minim = new Minim(this);
 	ain = minim.getLineIn(Minim.MONO, sampleSize);
-	aout = minim.getLineOut(Minim.MONO, sampleSize);
-	aout.mute();
 
-	wave1 = new Oscil(Frequency.ofPitch("C6"), .2, Waves.SINE);
-	wave2 = new Oscil(Frequency.ofPitch("E6"), .2, Waves.SINE);
-	wave3 = new Oscil(Frequency.ofPitch("G6"), .2, Waves.SINE);
-	wave1.patch(aout);
-	wave2.patch(aout);
-	wave3.patch(aout);
-
-	board = new AudioDevice(this, sampleRate, sampleSize);
 	fft = new FFT(ain.bufferSize(), ain.sampleRate());
 }
 
@@ -85,6 +62,7 @@ void draw() {
 		float py = max(1, min(88, keyN(freq[i]))) * h / 88 / 2;
 		float ny = max(1, min(88, keyN(fft.indexToFreq(max[i])))) * h / 88 / 2;
 		line(x - 1, h - py - y * h / 2, x, h - ny - y * h / 2);
+		
 		amp[i] = fft.getBand(max[i]);
 		freq[i] = fft.indexToFreq(max[i]);
 		keys[i] = pianoKey(keyN(freq[i]));
