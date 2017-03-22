@@ -57,6 +57,11 @@ void draw() {
 		}
 	}
 
+	if(x < width / 10) {
+		fill(0);
+		noStroke();
+		rect(x * 10, (1 - y) * h / 2, 10, h / 2);
+	}
 	stroke(255);
 	for (int i = 0; i < max.length; i++) {
 		float py = max(1, min(88, keyN(freq[i]))) * h / 88 / 2;
@@ -80,8 +85,5 @@ void draw() {
 	if(x > width) {
 		x = 0;
 		y = (y + 1) % 2;
-		fill(0);
-		noStroke();
-		rect(0, (1 - y) * h / 2, width, h / 2);
 	}
 }
