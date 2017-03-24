@@ -11,11 +11,16 @@ int w = 700;
 int h = 500;
 int x = 0;
 int y = 1;
-String[] letteredKeys = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+String[] letteredKeys = {" A", "A#", " B", " C", "C#", " D", "D#", " E", " F", "F#", " G", "G#"};
 float[] spectrum = new float[sampleSize];
 float[] amp = new float[3];
 float[] freq = new float[3];
 String[] keys = new String[3];
+
+String setDec(float v, int d) {
+	float a = pow(10, d);
+	return str(floor(v * a) / a);
+}
 
 float RA(float f) {
 	return pow(12194, 2) * pow(f, 4) / ((pow(f, 2) + pow(20.6, 2)) * sq((pow(f, 2) + pow(107.7, 2)) * (pow(f, 2) + pow(737.9, 2))) * (pow(f, 2) + pow(12194, 2)));
@@ -30,8 +35,8 @@ int keyN(float frequency) {
 }
 
 String pianoKey(int keyN) {
-	if(keyN < 1) {
-		return "NaN";
+	if(keyN < 1 || keyN > 88) {
+		return "---";
 	}
 	return letteredKeys[(keyN - 1) % 12] + floor((keyN + 8) / 12);
 }
@@ -39,6 +44,7 @@ String pianoKey(int keyN) {
 void setup() {
 	surface.setSize(w, h + 70);
 	background(0);
+	textFont(createFont("iosevka-regular.ttf", 12));
 
 	minim = new Minim(this);
 	ain = minim.getLineIn(Minim.MONO, sampleSize);
@@ -87,8 +93,8 @@ void draw() {
 	noStroke();
 	rect(0, h, width, 70);
 	fill(255);
-	text("Largest Amplitudes: " + amp[0] + ", " + amp[1] + ", " + amp[2], 0, height - 50);
-	text("Largest Frequencies: " + freq[0] + ", " + freq[1] + ", " + freq[2], 0, height - 30);
+	text("Largest Amplitudes: " + setDec(amp[0], 3) + ", " + setDec(amp[1], 3) + ", " + setDec(amp[2], 3), 0, height - 50);
+	text("Largest Frequencies: " + setDec(freq[0], 3) + ", " + setDec(freq[1], 3) + ", " + setDec(freq[2], 3), 0, height - 30);
 	text("Piano Keys: " + keys[0] + ", " + keys[1] + ", " + keys[2], 0, height - 10);
 
 	x++;
