@@ -12,9 +12,18 @@ int h = 500;
 int x = 0;
 int y = 1;
 String[] letteredKeys = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
+float[] spectrum = new float[sampleSize];
 float[] amp = new float[3];
 float[] freq = new float[3];
 String[] keys = new String[3];
+
+float RA(float f) {
+	return pow(12194, 2) * pow(f, 4) / ((pow(f, 2) + pow(20.6, 2)) * sq((pow(f, 2) + pow(107.7, 2)) * (pow(f, 2) + pow(737.9, 2))) * (pow(f, 2) + pow(12194, 2)));
+}
+
+float AWeighting(float f) {
+	return 20 * log(RA(f)) + 2;
+}
 
 int keyN(float frequency) {
 	return floor(12 * log(frequency / 440) / log(2)) + 49;
@@ -42,17 +51,17 @@ void draw() {
 
 	int[] max = new int[3];
 	for (int i = 0; i < sampleSize; i++) {
-		float v = fft.getBand(i);
-		if(fft.getBand(max[0]) < v) {
+		spectrum[i] = fft.getBand(i) * AWeighting(fft.indexToFreq(i));
+		if(spectrum[max[0]] < spectrum[i]) {
 			max[2] = max[1];
 			max[1] = max[0];
 			max[0] = i;
 		}
-		else if(fft.getBand(max[1]) < v) {
+		else if(spectrum[max[1]] < spectrum[i]) {
 			max[2] = max[1];
 			max[1] = i;
 		}
-		else if(fft.getBand(max[2]) < v) {
+		else if(spectrum[max[2]] < spectrum[i]) {
 			max[2] = i;
 		}
 	}
@@ -62,18 +71,18 @@ void draw() {
 		noStroke();
 		rect(x * 10, (1 - y) * h / 2, 10, h / 2);
 	}
-	
+
 	for(int i = max.length - 1; i >= 0; i--) {
 		stroke(i == 0 ? 255 : 64);
 		float py = max(1, min(88, keyN(freq[i]))) * h / 88 / 2;
 		float ny = max(1, min(88, keyN(fft.indexToFreq(max[i])))) * h / 88 / 2;
 		line(x - 1, h - py - y * h / 2, x, h - ny - y * h / 2);
-		
-		amp[i] = fft.getBand(max[i]);
+
+		amp[i] = spectrum[max[i]];
 		freq[i] = fft.indexToFreq(max[i]);
 		keys[i] = pianoKey(keyN(freq[i]));
 	}
-	
+
 	fill(64);
 	noStroke();
 	rect(0, h, width, 70);
