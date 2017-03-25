@@ -57,7 +57,7 @@ void draw() {
 
 	int[] max = new int[3];
 	for (int i = 0; i < sampleSize; i++) {
-		spectrum[i] = fft.getBand(i) * AWeighting(fft.indexToFreq(i));
+		spectrum[i] = fft.getBand(i);// * AWeighting(fft.indexToFreq(i));
 		if(spectrum[max[0]] < spectrum[i]) {
 			max[2] = max[1];
 			max[1] = max[0];
